@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/LeuenbergerP/ln-atm-cli/cmd/charge"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	charge.Execute()
 }

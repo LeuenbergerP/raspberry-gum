@@ -1,4 +1,4 @@
-POST http://localhost:3001/execute
+POST http://rpi3.local:3001/execute
 Content-Type: application/json
 
-{ "action" : "open", "checking_id": "1234"}
+{ "action" : "blink", "checking_id": "1234"}

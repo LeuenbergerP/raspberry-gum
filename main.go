@@ -6,7 +6,9 @@ import (
 	"github.com/stianeikeland/go-rpio/v4"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
+	"time"
 )
 
 type AtmHandler struct {
@@ -23,7 +25,11 @@ type AtmAction struct {
 }
 
 const (
-	Open = "open"
+	Blink = "blink"
+)
+
+var (
+	pin = rpio.Pin(17)
 )
 
 func (h *AtmHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -57,14 +63,23 @@ func (h *AtmHandler) Execute(w http.ResponseWriter, r *http.Request) {
 
 func (s *AtmService) PerformAction(action AtmAction) error {
 	log.Printf("Action: %v\n", action)
-	if action.Action == Open {
-		err := rpio.Open()
-		if err != nil {
-			log.Printf("Error: %v\n", err)
-			return err
+	if action.Action == Blink {
+		if err := rpio.Open(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
-		pin := rpio.Pin(17)
+
+		// Unmap gpio memory when done
+		defer rpio.Close()
+
+		// Set pin to output mode
 		pin.Output()
+
+		// Toggle pin 20 times
+		for x := 0; x < 20; x++ {
+			pin.Toggle()
+			time.Sleep(time.Second / 5)
+		}
 		return nil
 	}
 	return fmt.Errorf("unknown action: %s", action.Action)

@@ -1,4 +1,4 @@
 POST http://rpi3.local:3001/execute
 Content-Type: application/json
 
-{ "action" : "blink", "checking_id": "1234"}
+{ "action" : "blink", "checking_id": "1234", "amount": 20}

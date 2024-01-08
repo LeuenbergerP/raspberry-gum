@@ -22,6 +22,7 @@ type AtmAction struct {
 	Action     string `json:"action"`
 	CheckingId string `json:"checking_id"`
 	Item       string `json:"item"`
+	Amount     int    `json:"amount"`
 }
 
 const (
@@ -68,15 +69,9 @@ func (s *AtmService) PerformAction(action AtmAction) error {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-
-		// Unmap gpio memory when done
 		defer rpio.Close()
-
-		// Set pin to output mode
 		pin.Output()
-
-		// Toggle pin 20 times
-		for x := 0; x < 20; x++ {
+		for i := 0; i < action.Amount; i++ {
 			pin.Toggle()
 			time.Sleep(time.Second / 5)
 		}

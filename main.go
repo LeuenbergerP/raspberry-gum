@@ -64,20 +64,26 @@ func (h *AtmHandler) Execute(w http.ResponseWriter, r *http.Request) {
 
 func (s *AtmService) PerformAction(action AtmAction) error {
 	log.Printf("Action: %v\n", action)
-	if action.Action == Blink {
-		if err := rpio.Open(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		defer rpio.Close()
-		pin.Output()
-		for i := 0; i < action.Amount; i++ {
-			pin.Toggle()
-			time.Sleep(time.Second / 5)
-		}
-		return nil
+	switch action.Action {
+	case Blink:
+		return performBlink(action.Amount)
+	default:
+		return fmt.Errorf("unknown action: %s", action.Action)
 	}
-	return fmt.Errorf("unknown action: %s", action.Action)
+}
+
+func performBlink(count int) error {
+	if err := rpio.Open(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer rpio.Close()
+	pin.Output()
+	for i := 0; i < count; i++ {
+		pin.Toggle()
+		time.Sleep(time.Second / 5)
+	}
+	return nil
 }
 
 func WriteStatusWithMessageHandler(w http.ResponseWriter, status int, message string) {
